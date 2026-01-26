@@ -32,11 +32,17 @@ const allowedOrigins = [
   'http://localhost:5173',
 ];
 
+const isAllowedDynamic = (origin = '') => {
+  // Allow Vercel preview deployments for this project
+  if (origin.endsWith('.vercel.app') && origin.includes('sportizzz')) return true;
+  return false;
+};
+
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true); // allow server-to-server / curl
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (allowedOrigins.includes(origin) || isAllowedDynamic(origin)) return callback(null, true);
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
