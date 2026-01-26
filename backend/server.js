@@ -24,7 +24,24 @@ const bannerRoutes = require('./routes/bannerRoutes');
 const app = express();
 
 // 4. Middleware Configuration
-app.use(cors());
+// Allow the deployed frontend + local dev to call the API with credentials (cookies)
+const allowedOrigins = [
+  'https://sportizzz.vercel.app',
+  'https://sportizzz-git-main-jahanzaib-khans-projects-aed33117.vercel.app',
+  'https://sportizzz-imix976et-jahanzaib-khans-projects-aed33117.vercel.app',
+  'http://localhost:5173',
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // allow server-to-server / curl
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  })
+);
 
 // ✅ FIXED: Added limit to handle large product data (images/colors)
 app.use(express.json({ limit: '50mb' })); 
