@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- 1. GLOBAL STYLES --- */
+:root {
+  --primary: #002147;      /* Navy Blue */
+  --accent: #FF6F00;       /* Orange */
+  --bg-color: #F0F8FF;     /* Alice Blue */
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-color);
+  color: #131921; /* Dark text for light background */
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- 2. REUSABLE COMPONENT CLASSES --- */
+@layer components {
+  
+  /* Primary Button (Orange Pill Shape) */
+  .btn-primary {
+    @apply bg-sport-orange text-white font-bold py-3 px-8 rounded-full uppercase tracking-wider transition-all duration-300 shadow-lg shadow-orange-500/30;
+  }
+  .btn-primary:hover {
+    @apply bg-orange-700 -translate-y-1 shadow-orange-500/50;
+  }
+
+  /* Product Card (White, Rounded, Hover Lift) */
+  .product-card {
+    @apply bg-white rounded-2xl p-4 transition-all duration-300 border border-transparent relative overflow-hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  .product-card:hover {
+    @apply -translate-y-2 border-gray-100;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  }
+
+  /* Image Wrapper inside Card */
+  .image-wrapper {
+    @apply h-56 flex justify-center items-center bg-[#f9f9f9] rounded-xl mb-3 overflow-hidden p-4;
+  }
+  .image-wrapper img {
+    @apply max-h-full max-w-full object-contain transition-transform duration-500;
+  }
+  .product-card:hover .image-wrapper img {
+    @apply scale-110;
+  }
+}
