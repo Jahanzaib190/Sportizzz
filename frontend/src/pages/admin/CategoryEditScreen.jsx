@@ -10,7 +10,7 @@ import {
 import Loader from '../../components/Loader';
 
 // ✅ CLOUDINARY CONFIG
-const CLOUD_NAME = "ddk25vd4c"; 
+const CLOUD_NAME = "duqwy0su0"; 
 const UPLOAD_PRESET = "Sports";
 
 // ✅ STYLE CONFIGURATION (Updated to Navy Blue & Orange Theme)
