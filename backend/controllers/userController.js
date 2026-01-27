@@ -65,7 +65,7 @@ const registerUser = asyncHandler(async (req, res) => {
         message: `Your OTP is ${userExists.otp}`,
         type: 'otp', // ✅ Specify type
         otp: userExists.otp,
-      });
+      }).catch(err => console.error('Email error:', err));
 
       return res.status(200).json({ message: 'OTP sent to email. Please verify.' });
     }
@@ -87,7 +87,7 @@ const registerUser = asyncHandler(async (req, res) => {
       message: `Your OTP is ${otp}`,
       type: 'otp', // ✅ Specify type
       otp: otp,
-    });
+    }).catch(err => console.error('Email error:', err));
     res.status(201).json({ message: 'OTP sent to email. Please verify.' });
   } else {
     res.status(400);

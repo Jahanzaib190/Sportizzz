@@ -98,6 +98,9 @@ const sendEmail = async (options) => {
     console.log(`✅ Email sent to ${options.email}`);
   } catch (error) {
     console.error(`❌ Error sending email to ${options.email}:`, error.message);
+    // Don't throw - let registration continue even if email fails
+    console.log('⚠️ Email failed but continuing...');
+  }
     throw error;
   }
 };
