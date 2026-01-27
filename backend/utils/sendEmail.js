@@ -10,6 +10,9 @@ const sendEmail = async (options) => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    connectionTimeout: 10000, // 10 seconds max
+    greetingTimeout: 5000,
+    socketTimeout: 15000,
   });
 
   let htmlContent = options.html || '';
@@ -77,7 +80,13 @@ const sendEmail = async (options) => {
     await transporter.sendMail(message);
     console.log(`✅ Email sent to ${options.email}`);
   } catch (error) {
-    console.error(`❌ Email error:`, error.message);
+    console.error(`❌ Email error to ${options.email}:`, error.message);
+    console.error(`SMTP Config: ${process.env.EMAIL_HOST}:${process.env.EMAIL_PORT}, User: ${process.env.EMAIL_USER?.substring(0, 3)}***`);
+    
+    // ⚠️ DEBUG ONLY - Log OTP when email fails (REMOVE IN PRODUCTION)
+    if (options.otp) {
+      console.log(`🔑 FALLBACK OTP for ${options.email}: ${options.otp}`);
+    }
     // Don't block flow on email errors
   }
 };
