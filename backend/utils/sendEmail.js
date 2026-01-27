@@ -2,48 +2,7 @@ const nodemailer = require('nodemailer');
 const axios = require('axios');
 
 const sendEmail = async (options) => {
-  // Try Brevo API first (works better on cloud hosting like Render)
-  if (process.env.BREVO_API_KEY) {
-    try {
-      const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
-        to: [{ email: options.email }],
-        sender: { email: process.env.EMAIL_USER, name: 'SPORTIZZZ' },
-        subject: options.subject,
-        htmlContent: options.html || options.message,
-        textContent: options.message,
-      }, {
-        headers: {
-          'api-key': process.env.BREVO_API_KEY,
-          'Content-Type': 'application/json',
-        },
-        timeout: 10000,
-      });
-
-      console.log(`✅ Email sent via Brevo API to ${options.email}`);
-      return;
-    } catch (error) {
-      console.error(`❌ Brevo API error:`, error.message);
-      if (options.otp) {
-        console.log(`🔑 FALLBACK OTP for ${options.email}: ${options.otp}`);
-      }
-      return;
-    }
-  }
-
-  // Fallback to SMTP (for local dev)
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    connectionTimeout: 10000, // 10 seconds max
-    greetingTimeout: 5000,
-    socketTimeout: 15000,
-  });
-
+  // Generate HTML content first (used by both API and SMTP)
   let htmlContent = options.html || '';
 
   // OTP template
@@ -96,6 +55,48 @@ const sendEmail = async (options) => {
       </div>
     `;
   }
+
+  // Try Brevo API first (works better on cloud hosting like Render)
+  if (process.env.BREVO_API_KEY) {
+    try {
+      const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
+        to: [{ email: options.email }],
+        sender: { email: process.env.EMAIL_USER, name: 'SPORTIZZZ' },
+        subject: options.subject,
+        htmlContent: htmlContent || options.message,
+        textContent: options.message,
+      }, {
+        headers: {
+          'api-key': process.env.BREVO_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        timeout: 10000,
+      });
+
+      console.log(`✅ Email sent via Brevo API to ${options.email}`);
+      return;
+    } catch (error) {
+      console.error(`❌ Brevo API error:`, error.message);
+      if (options.otp) {
+        console.log(`🔑 FALLBACK OTP for ${options.email}: ${options.otp}`);
+      }
+      return;
+    }
+  }
+
+  // Fallback to SMTP (for local dev)
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 5000,
+    socketTimeout: 15000,
+  });
 
   const message = {
     from: `SPORTIZZZ <${process.env.EMAIL_USER}>`,
