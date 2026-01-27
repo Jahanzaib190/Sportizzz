@@ -22,13 +22,14 @@ const ShippingScreen = () => {
   const [city, setCity] = useState(shippingAddress?.city || '');
   const [postalCode, setPostalCode] = useState(shippingAddress?.postalCode || '');
   const [country, setCountry] = useState(shippingAddress?.country || '');
+  const [phone, setPhone] = useState(shippingAddress?.phone || '');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(saveShippingAddress({ address, city, postalCode, country }));
+    dispatch(saveShippingAddress({ address, city, postalCode, country, phone }));
     navigate('/payment');
   };
 
@@ -90,6 +91,18 @@ const ShippingScreen = () => {
               placeholder="Country Name"
               value={country}
               onChange={(e) => setCountry(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label style={STYLES.label}>Phone Number</label>
+            <input
+              type="tel"
+              required
+              style={STYLES.input}
+              placeholder="Your contact number (e.g., +92-300-1234567)"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
 

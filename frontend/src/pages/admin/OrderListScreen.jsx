@@ -92,6 +92,7 @@ const OrderListScreen = () => {
               <tr>
                 <th>ID</th>
                 <th>USER</th>
+                <th>PHONE</th>
                 <th>DATE</th>
                 <th>TOTAL</th>
                 <th>STATUS</th> {/* ✅ NEW COLUMN */}
@@ -104,6 +105,7 @@ const OrderListScreen = () => {
                 <tr key={order._id}>
                   <td style={{fontWeight:'700', color:'#007185'}}>#{order._id.substring(0, 10)}...</td>
                   <td>{order.user && order.user.name}</td>
+                  <td>{order.shippingAddress?.phone || 'N/A'}</td>
                   <td>{order.createdAt.substring(0, 10)}</td>
                   <td style={{fontWeight:'800', color: '#002147'}}>Rs {order.totalPrice.toLocaleString()}</td>
                   
@@ -148,6 +150,7 @@ const OrderListScreen = () => {
                    
                    <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', fontSize:'13px', color:'#555', marginBottom:'15px'}}>
                        <div><i className="fa-solid fa-user"></i> {order.user && order.user.name}</div>
+                       <div><i className="fa-solid fa-phone"></i> {order.shippingAddress?.phone || 'N/A'}</div>
                        <div style={{textAlign:'right'}}><i className="fa-solid fa-calendar"></i> {order.createdAt.substring(0, 10)}</div>
                        
                        <div style={{fontWeight:'bold', color:'#FF6F00'}}>Rs {order.totalPrice.toLocaleString()}</div>
