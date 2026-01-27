@@ -1,7 +1,36 @@
 const nodemailer = require('nodemailer');
+const axios = require('axios');
 
 const sendEmail = async (options) => {
-  // ✅ Create transporter (shared for OTP & order emails)
+  // Try Brevo API first (works better on cloud hosting like Render)
+  if (process.env.BREVO_API_KEY) {
+    try {
+      const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
+        to: [{ email: options.email }],
+        sender: { email: process.env.EMAIL_USER, name: 'SPORTIZZZ' },
+        subject: options.subject,
+        htmlContent: options.html || options.message,
+        textContent: options.message,
+      }, {
+        headers: {
+          'api-key': process.env.BREVO_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        timeout: 10000,
+      });
+
+      console.log(`✅ Email sent via Brevo API to ${options.email}`);
+      return;
+    } catch (error) {
+      console.error(`❌ Brevo API error:`, error.message);
+      if (options.otp) {
+        console.log(`🔑 FALLBACK OTP for ${options.email}: ${options.otp}`);
+      }
+      return;
+    }
+  }
+
+  // Fallback to SMTP (for local dev)
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
