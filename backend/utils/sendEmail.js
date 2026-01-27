@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-  // ✅ Create transporter
+  // ✅ Create transporter (shared for OTP & order emails)
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
@@ -13,7 +13,8 @@ const sendEmail = async (options) => {
   });
 
   let htmlContent = options.html || '';
-  
+
+  // OTP template
   if (!htmlContent && options.type === 'otp') {
     htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
@@ -32,12 +33,44 @@ const sendEmail = async (options) => {
     `;
   }
 
+  // Order template
+  if (!htmlContent && options.type === 'order') {
+    const orderItems = options.order?.orderItems?.map(item => `
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">Qty: ${item.qty}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">Rs. ${item.price}</td>
+      </tr>
+    `).join('') || '';
+
+    htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+        <div style="background-color: #002147; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+          <h1 style="margin: 0; font-size: 24px;">SPORTIZZZ</h1>
+          <p style="margin: 10px 0 0 0; font-size: 14px;">Order Confirmation</p>
+        </div>
+        <div style="background-color: white; padding: 30px; border-radius: 0 0 8px 8px;">
+          <h2 style="color: #002147;">Order Confirmed!</h2>
+          <p style="color: #666; font-size: 16px;">Hi ${options.name || 'Customer'},</p>
+          <p style="color: #666; font-size: 14px; line-height: 1.6;">Thank you for your order!</p>
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p style="color: #333; margin: 5px 0;"><strong>Order ID:</strong> ${options.order?._id || 'N/A'}</p>
+            <p style="color: #333; margin: 5px 0;"><strong>Total Amount:</strong> Rs. ${options.order?.totalPrice || 'N/A'}</p>
+            <p style="color: #333; margin: 5px 0;"><strong>Status:</strong> Pending</p>
+          </div>
+          <h3 style="color: #002147; margin-top: 25px; margin-bottom: 15px;">Order Items:</h3>
+          <table style="width: 100%; border-collapse: collapse;">${orderItems}</table>
+        </div>
+      </div>
+    `;
+  }
+
   const message = {
     from: `SPORTIZZZ <${process.env.EMAIL_USER}>`,
     to: options.email,
     subject: options.subject,
     text: options.message,
-    html: htmlContent,
+    html: htmlContent || options.html || options.message,
   };
 
   try {
@@ -45,6 +78,7 @@ const sendEmail = async (options) => {
     console.log(`✅ Email sent to ${options.email}`);
   } catch (error) {
     console.error(`❌ Email error:`, error.message);
+    // Don't block flow on email errors
   }
 };
 
