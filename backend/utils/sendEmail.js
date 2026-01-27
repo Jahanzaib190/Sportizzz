@@ -59,6 +59,7 @@ const sendEmail = async (options) => {
   // Try Brevo API first (works better on cloud hosting like Render)
   if (process.env.BREVO_API_KEY) {
     try {
+      console.log(`📧 Sending via Brevo API - From: ${process.env.EMAIL_USER}, To: ${options.email}`);
       const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
         to: [{ email: options.email }],
         sender: { email: process.env.EMAIL_USER, name: 'SPORTIZZZ' },
@@ -73,10 +74,11 @@ const sendEmail = async (options) => {
         timeout: 10000,
       });
 
-      console.log(`✅ Email sent via Brevo API to ${options.email}`);
+      console.log(`✅ Email sent via Brevo API - Response:`, response.data);
       return;
     } catch (error) {
-      console.error(`❌ Brevo API error:`, error.message);
+      console.error(`❌ Brevo API error:`, error.response?.data || error.message);
+      console.error(`Error Status:`, error.response?.status);
       if (options.otp) {
         console.log(`🔑 FALLBACK OTP for ${options.email}: ${options.otp}`);
       }
