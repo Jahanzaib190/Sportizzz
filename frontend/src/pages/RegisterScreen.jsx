@@ -27,6 +27,7 @@ const RegisterScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -46,27 +47,41 @@ const RegisterScreen = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+    const newErrors = {};
+
+    // Validation
+    if (!name.trim()) newErrors.name = 'Name is required';
+    if (!email.trim()) newErrors.email = 'Email is required';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = 'Invalid email format';
+    if (!password) newErrors.password = 'Password is required';
+    if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error('Please fix the errors below');
       return;
-    } else {
-      try {
-        const res = await register({ name, email, password }).unwrap();
-        
-        // ✅ Check if OTP was sent (not user data)
-        if (res.message && res.message.includes('OTP')) {
-          toast.success('OTP sent to your email! Please verify.');
-          navigate('/verify-otp', { state: { email } }); // ✅ Pass email to OTP page
-          return;
-        }
-        
-        // If login response received (user was logged in directly)
-        dispatch(setCredentials({ ...res }));
-        toast.success('Account Created Successfully!');
-        navigate(redirect);
-      } catch (err) {
-        toast.error(err?.data?.message || err.error);
+    }
+
+    try {
+      const res = await register({ name, email, password }).unwrap();
+      
+      // ✅ Check if OTP was sent (not user data)
+      if (res.message && res.message.includes('OTP')) {
+        toast.success('✅ OTP sent to your email! Please verify to complete registration.');
+        navigate('/verify-otp', { state: { email } }); // ✅ Pass email to OTP page
+        return;
       }
+      
+      // If login response received (user was logged in directly)
+      dispatch(setCredentials({ ...res }));
+      toast.success('✅ Account Created Successfully!');
+      navigate(redirect);
+    } catch (err) {
+      const errorMsg = err?.data?.message || err.error || 'Registration failed';
+      toast.error(`❌ ${errorMsg}`);
+      setErrors({ submit: errorMsg });
     }
   };
 
@@ -98,48 +113,52 @@ const RegisterScreen = () => {
                 <label style={{...STYLES.label, color: THEME.primary}}>Full Name</label>
                 <input 
                   type="text" 
-                  style={{...STYLES.input, borderColor: THEME.primary}} 
+                  style={{...STYLES.input, borderColor: errors.name ? '#e74c3c' : THEME.primary, borderWidth: errors.name ? '2px' : '1px'}} 
                   placeholder="First and last name" 
                   value={name}
-                  onChange={(e) => setName(e.target.value)} 
+                  onChange={(e) => { setName(e.target.value); setErrors({...errors, name: ''}) }}
                   required 
                 />
+                {errors.name && <p style={{color: '#e74c3c', fontSize: '12px', margin: '5px 0 0 5px', fontWeight: '600'}}>⚠️ {errors.name}</p>}
               </div>
 
               <div style={{ marginBottom: '20px' }}>
                 <label style={{...STYLES.label, color: THEME.primary}}>Email Address</label>
                 <input 
                   type="email" 
-                  style={{...STYLES.input, borderColor: THEME.primary}} 
+                  style={{...STYLES.input, borderColor: errors.email ? '#e74c3c' : THEME.primary, borderWidth: errors.email ? '2px' : '1px'}} 
                   placeholder="example@email.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)} 
+                  onChange={(e) => { setEmail(e.target.value); setErrors({...errors, email: ''}) }}
                   required 
                 />
+                {errors.email && <p style={{color: '#e74c3c', fontSize: '12px', margin: '5px 0 0 5px', fontWeight: '600'}}>⚠️ {errors.email}</p>}
               </div>
 
               <div style={{ marginBottom: '20px' }}>
                 <label style={{...STYLES.label, color: THEME.primary}}>Password</label>
                 <input 
                   type="password" 
-                  style={{...STYLES.input, borderColor: THEME.primary}} 
+                  style={{...STYLES.input, borderColor: errors.password ? '#e74c3c' : THEME.primary, borderWidth: errors.password ? '2px' : '1px'}} 
                   placeholder="At least 6 characters"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)} 
+                  onChange={(e) => { setPassword(e.target.value); setErrors({...errors, password: ''}) }}
                   required 
                 />
+                {errors.password && <p style={{color: '#e74c3c', fontSize: '12px', margin: '5px 0 0 5px', fontWeight: '600'}}>⚠️ {errors.password}</p>}
               </div>
 
               <div style={{ marginBottom: '30px' }}>
                 <label style={{...STYLES.label, color: THEME.primary}}>Confirm Password</label>
                 <input 
                   type="password" 
-                  style={{...STYLES.input, borderColor: THEME.primary}} 
+                  style={{...STYLES.input, borderColor: errors.confirmPassword ? '#e74c3c' : THEME.primary, borderWidth: errors.confirmPassword ? '2px' : '1px'}} 
                   placeholder="Retype password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)} 
+                  onChange={(e) => { setConfirmPassword(e.target.value); setErrors({...errors, confirmPassword: ''}) }}
                   required 
                 />
+                {errors.confirmPassword && <p style={{color: '#e74c3c', fontSize: '12px', margin: '5px 0 0 5px', fontWeight: '600'}}>⚠️ {errors.confirmPassword}</p>}
               </div>
 
               <button 
