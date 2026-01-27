@@ -101,8 +101,9 @@ const sendEmail = async (options) => {
     // Don't throw - let registration continue even if email fails
     console.log('⚠️ Email failed but continuing...');
   }
-    throw error;
-  }
+};
+
+module.exports = sendEmail;
 };
 
 module.exports = sendEmail;
