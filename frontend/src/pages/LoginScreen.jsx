@@ -54,7 +54,21 @@ const LoginScreen = () => {
       toast.success('Login Successful');
       navigate(redirect);
     } catch (err) {
-      toast.error(err?.data?.message || err.error);
+      const message = err?.data?.message || err.error || 'Login failed. Please try again.';
+      const lower = message.toLowerCase();
+
+      let friendlyMessage = message;
+      if (lower.includes('user not found')) {
+        friendlyMessage = 'User not found. Please register first.';
+      } else if (lower.includes('incorrect password')) {
+        friendlyMessage = 'Incorrect password. Please try again.';
+      } else if (lower.includes('invalid email')) {
+        friendlyMessage = 'Email or password is incorrect.';
+      } else if (lower.includes('verify')) {
+        friendlyMessage = 'Please verify your email first.';
+      }
+
+      toast.error(friendlyMessage);
     }
   };
 

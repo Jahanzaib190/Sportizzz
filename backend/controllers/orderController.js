@@ -63,13 +63,28 @@ const addOrderItems = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('No order items');
   } else {
+    const mappedItems = orderItems.map((x) => ({
+      ...x,
+      // ✅ FIXED: Extract real productId from unique ID (format: productId-Color-Size)
+      product: x.productId || x._id?.split('-')[0] || x._id,
+      _id: undefined,
+    }));
+
+    // ✅ Validate stock before creating order
+    for (const item of mappedItems) {
+      const product = await Product.findById(item.product);
+      if (!product) {
+        res.status(404);
+        throw new Error('Product not found');
+      }
+      if (product.countInStock < item.qty) {
+        res.status(400);
+        throw new Error(`Insufficient stock for ${product.name}`);
+      }
+    }
+
     const order = new Order({
-      orderItems: orderItems.map((x) => ({
-        ...x,
-        // ✅ FIXED: Extract real productId from unique ID (format: productId-Color-Size)
-        product: x.productId || x._id?.split('-')[0] || x._id,
-        _id: undefined,
-      })),
+      orderItems: mappedItems,
       user: req.user._id,
       shippingAddress,
       paymentMethod,
@@ -77,9 +92,23 @@ const addOrderItems = asyncHandler(async (req, res) => {
       taxPrice,
       shippingPrice,
       totalPrice,
+      stockReduced: false,
     });
 
     const createdOrder = await order.save();
+
+    // ✅ Decrease stock immediately for all orders
+    for (const item of createdOrder.orderItems) {
+      const product = await Product.findById(item.product);
+      if (!product) continue;
+
+      product.countInStock -= item.qty;
+      if (product.countInStock < 0) product.countInStock = 0;
+      await product.save();
+    }
+
+    createdOrder.stockReduced = true;
+    await createdOrder.save();
 
     // ✅ FIXED: Email Sending Logic
     try {
@@ -143,18 +172,21 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
       email_address: req.body.email_address,
     };
 
-    // --- Decrease stock for every item in the order ---
-    for (const index in order.orderItems) {
-      const item = order.orderItems[index];
-      const product = await Product.findById(item.product);
-      
-      if (product) {
-        product.countInStock = product.countInStock - item.qty;
-        if (product.countInStock < 0) {
-            product.countInStock = 0;
+    // --- Decrease stock for every item in the order (only once) ---
+    if (!order.stockReduced) {
+      for (const index in order.orderItems) {
+        const item = order.orderItems[index];
+        const product = await Product.findById(item.product);
+        
+        if (product) {
+          product.countInStock = product.countInStock - item.qty;
+          if (product.countInStock < 0) {
+              product.countInStock = 0;
+          }
+          await product.save();
         }
-        await product.save();
       }
+      order.stockReduced = true;
     }
     // ------------------------------------------------
 

@@ -79,6 +79,11 @@ const orderSchema = mongoose.Schema(
       required: true,
       default: 'Processing', // Default status when order is created
     },
+    // ✅ Track if stock was reduced to avoid double-decrement
+    stockReduced: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true, 

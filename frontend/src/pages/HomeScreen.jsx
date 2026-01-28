@@ -1,13 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { useGetProductsQuery } from '../slices/productsApiSlice';
 import { useGetCategoriesQuery } from '../slices/categoriesApiSlice';
 import { useGetBannersQuery } from '../slices/bannersApiSlice'; // ✅ Banners from DB
-import { addToCart } from '../slices/cartSlice';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { toast } from 'react-toastify';
 
 // ✅ PROFESSIONAL STYLES (Unchanged)
 const CSS_OVERRIDES = `
@@ -83,8 +80,6 @@ const CSS_OVERRIDES = `
 const HomeScreen = () => {
   const { keyword } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  
   // 1. Redux Data Fetching
   const { data: productsData, isLoading: loadingProducts, error } = useGetProductsQuery({ keyword });
   const { data: categoriesData } = useGetCategoriesQuery();
@@ -250,36 +245,51 @@ const HomeScreen = () => {
           <>
           <div className="horizontal-scroll-container">
             {displayProducts.map(product => (
-              <div key={product._id} style={STYLES.productCard} className="product-card-hover product-card-mobile">
-                
-                <Link to={`/product/${product._id}`} style={{textDecoration: 'none'}} onClick={saveScrollPosition}>
-                  <div style={STYLES.prodImageWrapper} className="prod-image-wrapper-mobile">
-                    {/* Handles both old simple image and new color-based images */}
-                    <img 
-                        src={product.colors?.[0]?.images?.[0] || product.image} 
-                        alt={product.name} 
-                        style={STYLES.prodImage} 
-                    />
-                  </div>
-                </Link>
+              <div
+                key={product._id}
+                style={{ ...STYLES.productCard, cursor: 'pointer' }}
+                className="product-card-hover product-card-mobile"
+                role="button"
+                tabIndex={0}
+                onClick={() => {
+                  saveScrollPosition();
+                  navigate(`/product/${product._id}`);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    saveScrollPosition();
+                    navigate(`/product/${product._id}`);
+                  }
+                }}
+              >
+                <div style={STYLES.prodImageWrapper} className="prod-image-wrapper-mobile">
+                  {/* Handles both old simple image and new color-based images */}
+                  <img
+                    src={product.colors?.[0]?.images?.[0] || product.image}
+                    alt={product.name}
+                    style={STYLES.prodImage}
+                  />
+                </div>
 
                 <div style={STYLES.productInfo}>
-                  <Link to={`/product/${product._id}`} style={{ textDecoration: 'none', color: '#002147' }} onClick={saveScrollPosition}>
-                    <h3 style={STYLES.productName} className="prod-name-mobile">{product.name}</h3>
-                  </Link>
+                  <h3 style={STYLES.productName} className="prod-name-mobile">{product.name}</h3>
 
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px'}}>
-                      <p style={STYLES.productPrice} className="prod-price-mobile">Rs {product.price}</p>
-                      <p style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', color: product.countInStock <= 0 ? '#e74c3c' : '#27ae60' }}>
-                        {product.countInStock <= 0 ? 'Sold Out' : 'In Stock'}
-                      </p>
+                    <p style={STYLES.productPrice} className="prod-price-mobile">Rs {product.price}</p>
+                    <p style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', color: product.countInStock <= 0 ? '#e74c3c' : '#27ae60' }}>
+                      {product.countInStock <= 0 ? 'Sold Out' : 'In Stock'}
+                    </p>
                   </div>
 
-                  <Link to={`/product/${product._id}`} onClick={saveScrollPosition} style={{textDecoration: 'none'}}>
-                    <button className="cta-btn cta-btn-mobile" disabled={product.countInStock <= 0} style={{ ...STYLES.addToCartBtn, background: product.countInStock <= 0 ? '#bdc3c7' : '#002147', width: '100%' }}>
-                      {product.countInStock <= 0 ? 'Out of Stock' : '👁️ View Product'}
-                    </button>
-                  </Link>
+                  <button
+                    type="button"
+                    className="cta-btn cta-btn-mobile"
+                    aria-disabled={product.countInStock <= 0}
+                    style={{ ...STYLES.addToCartBtn, background: product.countInStock <= 0 ? '#bdc3c7' : '#002147', width: '100%' }}
+                  >
+                    {product.countInStock <= 0 ? 'Out of Stock' : 'View Product'}
+                  </button>
                 </div>
               </div>
             ))}

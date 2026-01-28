@@ -13,32 +13,37 @@ const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
-  if (user && (await user.matchPassword(password))) {
-    
-    // --- TEMPORARY SELF-HEALING CODE ---
-    // If this is the admin, force verification to TRUE in the database automatically
-    if (user.isAdmin && !user.isVerified) {
-        user.isVerified = true;
-        await user.save();
-    }
-    // -----------------------------------
-
-    if (!user.isVerified) {
-      res.status(401);
-      throw new Error('Please verify your email first.');
-    }
-    
-    generateToken(res, user._id);
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-    });
-  } else {
-    res.status(401);
-    throw new Error('Invalid email or password');
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found. Please register first.');
   }
+
+  // --- TEMPORARY SELF-HEALING CODE ---
+  // If this is the admin, force verification to TRUE in the database automatically
+  if (user.isAdmin && !user.isVerified) {
+      user.isVerified = true;
+      await user.save();
+  }
+  // -----------------------------------
+
+  if (!user.isVerified) {
+    res.status(401);
+    throw new Error('Please verify your email first.');
+  }
+
+  const isMatch = await user.matchPassword(password);
+  if (!isMatch) {
+    res.status(401);
+    throw new Error('Incorrect password.');
+  }
+
+  generateToken(res, user._id);
+  res.json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    isAdmin: user.isAdmin,
+  });
 });
 
 // @desc    Register user & Send OTP
