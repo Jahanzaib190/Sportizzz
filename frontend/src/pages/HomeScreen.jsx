@@ -122,13 +122,7 @@ const HomeScreen = () => {
     }
   }, [slides.length, keyword]);
 
-  // 5. Add To Cart Handler
-  const addToCartHandler = (product) => {
-    dispatch(addToCart({ ...product, qty: 1 }));
-    toast.success(`${product.name} added to cart!`);
-  };
-
-  // 6. Products Processing (Latest 20)
+  // 5. Products Processing (Latest 20)
   const displayProducts = useMemo(() => {
     if (!productsData) return [];
     
@@ -143,7 +137,7 @@ const HomeScreen = () => {
     return allProducts;
   }, [productsData, keyword]);
 
-  // 7. Categories Processing
+  // 6. Categories Processing
   const displayCategories = useMemo(() => {
       if(!categoriesData) return [];
       return categoriesData.slice(0, 4); 
@@ -281,9 +275,11 @@ const HomeScreen = () => {
                       </p>
                   </div>
 
-                  <button className="cta-btn cta-btn-mobile" onClick={() => addToCartHandler(product)} disabled={product.countInStock <= 0} style={{ ...STYLES.addToCartBtn, background: product.countInStock <= 0 ? '#bdc3c7' : '#FF6F00' }}>
-                    {product.countInStock <= 0 ? 'Out of Stock' : 'Add to Cart'}
-                  </button>
+                  <Link to={`/product/${product._id}`} onClick={saveScrollPosition} style={{textDecoration: 'none'}}>
+                    <button className="cta-btn cta-btn-mobile" disabled={product.countInStock <= 0} style={{ ...STYLES.addToCartBtn, background: product.countInStock <= 0 ? '#bdc3c7' : '#002147', width: '100%' }}>
+                      {product.countInStock <= 0 ? 'Out of Stock' : '👁️ View Product'}
+                    </button>
+                  </Link>
                 </div>
               </div>
             ))}
