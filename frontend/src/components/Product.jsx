@@ -61,21 +61,20 @@ const Product = ({ product }) => {
 
       {/* 3. Button Section (Mobile: Smaller padding/text) */}
       <div className="px-3 pb-3 md:px-4 md:pb-4">
-        <button 
-          onClick={addToCartHandler}
-          disabled={product.countInStock === 0}
+        <Link 
+          to={`/product/${product._id}`}
           className={`w-full py-2 md:py-2.5 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-1.5 md:gap-2 ${
             product.countInStock > 0 
-            ? 'bg-[#FF6F00] text-white hover:bg-[#e65c00] hover:shadow-lg cursor-pointer' 
-            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+            ? 'bg-[#002147] text-white hover:bg-[#001532] hover:shadow-lg cursor-pointer' 
+            : 'bg-gray-200 text-gray-500 cursor-not-allowed pointer-events-none'
           }`}
         >
           {product.countInStock > 0 ? (
-            <> <FaShoppingCart className="text-xs md:text-sm"/> <span className="md:inline">Add</span><span className="hidden md:inline"> to Cart</span> </>
+            <> 👁️ <span>View</span> </>
           ) : (
             'Sold Out'
           )}
-        </button>
+        </Link>
       </div>
     </div>
   );

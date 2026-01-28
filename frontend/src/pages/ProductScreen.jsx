@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetProductDetailsQuery, useCreateReviewMutation } from '../slices/productsApiSlice';
+import useScrollToTop from '../utils/useScrollToTop';
 import { addToCart } from '../slices/cartSlice';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
@@ -41,6 +42,8 @@ const CSS_OVERRIDES = `
 `;
 
 const ProductScreen = () => {
+  useScrollToTop(); // ✅ Scroll to top when page loads
+  
   const { id: productId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -176,10 +179,6 @@ const ProductScreen = () => {
             </div>
 
             <h2 style={STYLES.price} className="prod-price">Rs {product.price.toLocaleString()}</h2>
-            
-            <div style={STYLES.descriptionBox}>
-              <p style={STYLES.descText}>{product.description}</p>
-            </div>
 
             {/* --- COLOR OPTIONS --- */}
             {product.colors && product.colors.length > 0 && (
@@ -229,6 +228,11 @@ const ProductScreen = () => {
                   </div>
                 </div>
             )}
+
+            {/* --- DESCRIPTION (MOVED HERE - AFTER COLOR/SIZE) --- */}
+            <div style={STYLES.descriptionBox}>
+              <p style={STYLES.descText}><strong>Description:</strong> {product.description}</p>
+            </div>
 
             {/* ACTION BUTTONS */}
             {product.countInStock > 0 ? (

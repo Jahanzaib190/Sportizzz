@@ -1,6 +1,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useGetProductsQuery } from '../slices/productsApiSlice';
+import useScrollToTop from '../utils/useScrollToTop';
 import { addToCart } from '../slices/cartSlice';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
@@ -27,6 +28,8 @@ const CSS_OVERRIDES = `
 `;
 
 const CategoryProductScreen = () => {
+  useScrollToTop(); // ✅ Add scroll to top on page load
+  
   const { name: categoryName } = useParams(); // Using 'name' as per your route param
   const navigate = useNavigate();
   const dispatch = useDispatch();

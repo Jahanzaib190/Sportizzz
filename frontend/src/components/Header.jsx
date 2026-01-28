@@ -88,16 +88,23 @@ const Header = () => {
           <div className="flex flex-col space-y-4">
              <Link to="/" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={handleLogoClick}>Home</Link>
              
-             {/* ✅ CHANGE 1: Correct ID 'about-section' */}
              <button onClick={() => handleScroll('about-section')} className="text-left text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition">About Us</button>
              <button onClick={() => handleScroll('footer')} className="text-left text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition">Contact</button>
+
+             <Link to="/products" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>Browse</Link>
 
              <Link to="/cart" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition flex items-center" onClick={closeSidebar}>
                 My Cart 
                 {cartItems.length > 0 && <span className="ml-2 bg-sport-orange text-white text-xs font-bold px-2 py-1 rounded-full">{cartItems.reduce((a, c) => a + c.qty, 0)}</span>}
              </Link>
 
-             {/* Admin Links in Sidebar Only (As per original design usually) */}
+             {userInfo && (
+               <>
+                 <Link to="/myorders" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>My Orders</Link>
+                 <Link to="/profile" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>My Profile</Link>
+               </>
+             )}
+
              {userInfo && userInfo.isAdmin && (
                <div className="pt-2">
                  <p className="text-sport-orange font-bold text-sm uppercase mb-2">Admin Controls</p>

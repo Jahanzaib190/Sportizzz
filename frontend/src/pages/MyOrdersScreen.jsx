@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useGetMyOrdersQuery } from '../slices/ordersApiSlice';
+import useScrollToTop from '../utils/useScrollToTop';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 
@@ -66,6 +67,8 @@ const CSS_OVERRIDES = `
 `;
 
 const MyOrdersScreen = () => {
+  useScrollToTop(); // ✅ Add scroll to top on page load
+  
   const { data: orders, isLoading, error } = useGetMyOrdersQuery();
   const [activeTab, setActiveTab] = useState('All'); 
 
