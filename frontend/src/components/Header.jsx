@@ -93,15 +93,10 @@ const Header = () => {
 
              <Link to="/products" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>Browse</Link>
 
-             <Link to="/cart" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition flex items-center" onClick={closeSidebar}>
-                My Cart 
-                {cartItems.length > 0 && <span className="ml-2 bg-sport-orange text-white text-xs font-bold px-2 py-1 rounded-full">{cartItems.reduce((a, c) => a + c.qty, 0)}</span>}
-             </Link>
-
              {userInfo && (
                <>
-                 <Link to="/myorders" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>My Orders</Link>
-                 <Link to="/profile" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>My Profile</Link>
+                 <Link to="/myorders" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>Orders</Link>
+                 <Link to="/products" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>Category</Link>
                </>
              )}
 

@@ -325,7 +325,9 @@ const ProductScreen = () => {
                 </button>
                 </form>
             ) : (
-                <Message>Please <Link to='/login' className="text-blue-600 underline">sign in</Link> to write a review</Message>
+                <div style={{...STYLES.emptyReview, textAlign: 'center', color: '#666'}}>
+                  <p style={{marginBottom: '15px', fontSize: '15px'}}>Please <Link to='/login' style={{color: '#002147', fontWeight: '700', textDecoration: 'underline'}}>sign in</Link> to write a review</p>
+                </div>
             )}
           </div>
 

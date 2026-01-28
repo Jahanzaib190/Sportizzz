@@ -68,7 +68,15 @@ const LoginScreen = () => {
         friendlyMessage = 'Please verify your email first.';
       }
 
-      toast.error(friendlyMessage);
+      // Professional toast notification
+      toast.error(friendlyMessage, {
+        position: 'top-right',
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true
+      });
     }
   };
 
