@@ -96,7 +96,7 @@ const Header = () => {
              {userInfo && (
                <>
                  <Link to="/myorders" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>Orders</Link>
-                 <Link to="/products" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>Category</Link>
+                 <Link to="/categories" className="text-sport-light text-lg font-medium border-b border-white/10 pb-2 hover:text-sport-orange transition" onClick={closeSidebar}>Category</Link>
                </>
              )}
 

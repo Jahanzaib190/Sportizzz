@@ -177,10 +177,6 @@ const ProductScreen = () => {
 
             <h2 style={STYLES.price} className="prod-price">Rs {product.price.toLocaleString()}</h2>
 
-            <div style={STYLES.descriptionBox}>
-              <p style={STYLES.descText}>{product.description}</p>
-            </div>
-
             {/* --- COLOR OPTIONS --- */}
             {product.colors && product.colors.length > 0 && (
               <div style={{margin: '30px 0'}}>
@@ -229,6 +225,10 @@ const ProductScreen = () => {
                   </div>
                 </div>
             )}
+
+            <div style={STYLES.descriptionBox}>
+              <p style={STYLES.descText}>{product.description}</p>
+            </div>
 
             {/* ACTION BUTTONS */}
             {product.countInStock > 0 ? (

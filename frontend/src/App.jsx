@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
-// import { ToastContainer } from 'react-toastify'; // ✅ Removed
-// import 'react-toastify/dist/ReactToastify.css'; // ✅ Removed
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
@@ -25,7 +25,18 @@ const App = () => {
         
       </div>
       
-      {/* <ToastContainer /> */} {/* ✅ Notification system removed */}
+      <ToastContainer 
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   );
 };
